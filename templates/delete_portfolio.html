@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Portfolio</title>
+</head>
+<body>
+
+<h2>Delete Portfolio</h2>
+
+<p>Are you sure you want to delete "{{ portfolio.title }}"?</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Yes, Delete</button>
+</form>
+
+<a href="{% url 'view_portfolio' %}">Cancel</a>
+
+</body>
+</html>

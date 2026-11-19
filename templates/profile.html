@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+</head>
+<body>
+<h2>My Profile</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+
+    <h3>Common Details</h3>
+    {{ user_form.as_p }}
+
+    {% if freelancer_form %}
+        <h3>Freelancer Details</h3>
+        {{ freelancer_form.as_p }}
+    {% endif %}
+{% if freelancer_form %}
+    <br><br>
+    <a href="{% url 'portfolio' %}">Add Portfolio</a><br>
+    <a href="{% url 'view_portfolio' %}">View My Portfolio</a>
+{% endif %}
+    <button type="submit">Update Profile</button>
+</form>
+</body>
+</html>

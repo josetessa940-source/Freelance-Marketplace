@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Portfolio</title>
+</head>
+<body>
+
+<h2>Edit Portfolio</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Update Portfolio</button>
+</form>
+
+<a href="{% url 'view_portfolio' %}">Back to Portfolio</a>
+
+</body>
+</html>

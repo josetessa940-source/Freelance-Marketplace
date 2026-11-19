@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>My Portfolio</h2>
+
+{% for item in portfolios %}
+    <h3>{{ item.title }}</h3>
+    <p>{{ item.description }}</p>
+
+    {% if item.project_url %}
+        <a href="{{ item.project_url }}" target="_blank">View Project</a><br>
+    {% endif %}
+<a href="{% url 'edit_portfolio' item.id %}">Edit</a><br>
+<a href="{% url 'delete_portfolio' item.id %}">Delete</a>
+    <hr>
+{% empty %}
+    <p>No portfolio items added yet.</p>
+{% endfor %}
+
+<a href="{% url 'profile' %}">Back to My Profile</a>
+</body>
+</html>

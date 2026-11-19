@@ -24,3 +24,18 @@ class RegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model=CustomUser
+        fields=['first_name','last_name','email']
+
+class FreelancerProfileForm(forms.ModelForm):
+    class Meta:
+        model = FreelancerProfile
+        fields = ['biography', 'skills', 'experience', 'hourly_rate']
+
+class PortfolioItemForm(forms.ModelForm):
+    class Meta:
+        model = PortfolioItem
+        fields = ['title', 'description', 'project_url']

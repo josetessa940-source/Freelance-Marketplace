@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Freelancer Profile</title>
+</head>
+<body>
+
+<h2>Freelancer Profile</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Save Profile</button>
+</form>
+
+<a href="{% url 'profile' %}">Back to Profile</a>
+
+</body>
+</html>

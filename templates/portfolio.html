@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portfolio</title>
+</head>
+<body>
+
+<h2>Portfolio Item</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Save Portfolio</button>
+</form>
+
+<a href="{% url 'profile' %}">Back to My Profile</a>
+
+</body>
+</html>
