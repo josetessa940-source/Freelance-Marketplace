@@ -28,6 +28,10 @@
     <a href="{% url 'portfolio' %}">Add Portfolio</a><br>
     <a href="{% url 'view_portfolio' %}">View My Portfolio</a>
 {% endif %}
+    {% if client_form %}
+        <h3>Client Details</h3>
+    {{ client_form.as_p }}
+    {% endif %}
     <button type="submit">Update Profile</button>
 </form>
 </body>

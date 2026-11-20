@@ -31,3 +31,12 @@ class PortfolioItem(models.Model):
 
     def __str__(self):
         return self.title
+
+class ClientProfile(models.Model):
+    user=models.OneToOneField(CustomUser,on_delete=models.CASCADE)
+    company_name=models.CharField(max_length=100,blank=True)
+    organization_details=models.TextField(blank=True)
+    website=models.URLField(blank=True)
+    location=models.CharField(max_length=100,blank=True)
+    def __str__(self):
+        return self.user.username

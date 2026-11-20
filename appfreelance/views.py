@@ -132,35 +132,50 @@ def profile(request):
 
     user_form = UserProfileForm(instance=request.user)
     freelancer_form = None
+    client_form = None
+    freelancer = None
+    client = None
 
     if request.user.is_freelancer:
         freelancer, created = FreelancerProfile.objects.get_or_create(
-            user=request.user
-        )
+            user=request.user)
         freelancer_form = FreelancerProfileForm(instance=freelancer)
+
+    if request.user.is_client:
+        client, created = ClientProfile.objects.get_or_create(
+            user=request.user)
+        client_form = ClientProfileForm(instance=client)
 
     if request.method == "POST":
         user_form = UserProfileForm(
-            request.POST, instance=request.user
-        )
+            request.POST, instance=request.user)
 
         if request.user.is_freelancer:
             freelancer_form = FreelancerProfileForm(
-                request.POST, instance=freelancer
-            )
+                request.POST, instance=freelancer)
+
+        if request.user.is_client:
+            client_form = ClientProfileForm(
+                request.POST, instance=client)
 
         if user_form.is_valid():
             if freelancer_form is None or freelancer_form.is_valid():
-                user_form.save()
+                if client_form is None or client_form.is_valid():
 
-                if freelancer_form:
-                    freelancer_form.save()
+                    user_form.save()
 
-                messages.success(request, "Profile updated successfully!")
-                return redirect('profile')
+                    if freelancer_form:
+                        freelancer_form.save()
+
+                    if client_form:
+                        client_form.save()
+
+                    messages.success(
+                        request, "Profile updated successfully!")
+                    return redirect('profile')
 
     return render(request, 'profile.html', {
-        'user_form': user_form,'freelancer_form': freelancer_form})
+        'user_form': user_form,'freelancer_form': freelancer_form,'client_form': client_form})
 
 def freelancer_profile(request):
     if not request.user.is_authenticated:

@@ -39,3 +39,8 @@ class PortfolioItemForm(forms.ModelForm):
     class Meta:
         model = PortfolioItem
         fields = ['title', 'description', 'project_url']
+
+class ClientProfileForm(forms.ModelForm):
+    class Meta:
+        model = ClientProfile
+        fields=['company_name','organization_details','website','location']
