@@ -32,6 +32,13 @@
         <h3>Client Details</h3>
     {{ client_form.as_p }}
     {% endif %}
+    {% if client_form %}
+        <a href="{% url 'create_project' %}">Create Project</a>
+    {% endif %}
+    {% if freelancer_form %}
+    <a href="{% url 'browse_projects' %}">Browse Projects</a>
+    {% endif %}
+    <a href="{% url 'my_projects' %}">My Projects</a>
     <button type="submit">Update Profile</button>
 </form>
 </body>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Projects</title>
+</head>
+<body>
+
+<h2>Available Projects</h2>
+
+<form method="GET">
+
+    <input type="text" name="search" placeholder="Search projects...">
+
+    <input type="number" name="min_budget" placeholder="Minimum Budget">
+
+    <input type="number" name="max_budget" placeholder="Maximum Budget">
+
+    <select name="sort_by">
+        <option value="">Sort By</option>
+        <option value="budget_low">Budget: Low to High</option>
+        <option value="budget_high">Budget: High to Low</option>
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+    </select>
+
+    <button type="submit">Search / Filter / Sort</button>
+
+</form>
+
+{% for project in projects %}
+
+    <h3>{{ project.title }}</h3>
+
+    <p>Description: {{ project.description }}</p>
+
+    <p>Budget: {{ project.budget }}</p>
+
+    <p>Deadline: {{ project.deadline }}</p>
+
+    <p>Required Skills: {{ project.required_skills }}</p>
+
+    <p>Status: {{ project.status }}</p>
+    <p>Created At: {{ project.created_url|date:"d-m-Y h:i A" }}</p>
+
+    <p>Updated At: {{ project.updated_url|date:"d-m-Y h:i A" }}</p>
+
+    <hr>
+
+{% empty %}
+
+    <p>No published projects available.</p>
+
+{% endfor %}
+<div>
+    {% if projects.has_previous %}
+        <a href="?page={{ projects.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ projects.number }} of {{ projects.paginator.num_pages }}</span>
+
+    {% if projects.has_next %}
+        <a href="?page={{ projects.next_page_number }}">Next</a>
+    {% endif %}
+</div>
+
+<a href="{% url 'profile' %}">Back to Profile</a>
+
+</body>
+</html>

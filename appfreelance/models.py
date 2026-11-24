@@ -40,3 +40,22 @@ class ClientProfile(models.Model):
     location=models.CharField(max_length=100,blank=True)
     def __str__(self):
         return self.user.username
+
+class Project(models.Model):
+    STATUS_CHOICES=[
+        ('draft','Draft'),
+        ('published','Published'),
+        ('paused','Paused'),
+        ('closed','Closed'),
+        ('archived','Archived'),]
+    client=models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='projects')
+    title=models.CharField(max_length=100)
+    description=models.TextField()
+    budget=models.DecimalField(max_digits=10,decimal_places=2)
+    deadline=models.DateField()
+    required_skills=models.TextField()
+    status=models.CharField(choices=STATUS_CHOICES,default='draft')
+    created_url=models.DateTimeField(auto_now_add=True)
+    updated_url=models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.title

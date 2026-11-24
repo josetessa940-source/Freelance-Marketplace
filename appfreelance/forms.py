@@ -44,3 +44,8 @@ class ClientProfileForm(forms.ModelForm):
     class Meta:
         model = ClientProfile
         fields=['company_name','organization_details','website','location']
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model=Project
+        fields=['title','description','budget','deadline','required_skills']

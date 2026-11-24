@@ -14,6 +14,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.conf import settings
+from django.core.paginator import Paginator
 # Create your views here.
 
 def home(request):
@@ -285,3 +286,172 @@ def delete_portfolio(request, id):
     return render(request, 'delete_portfolio.html', {
         'portfolio': portfolio
     })
+
+def create_project(request):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+    if not request.user.is_client:
+        return redirect('profile')
+    if request.method=='POST':
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            project=form.save(commit=False)
+            project.client=request.user
+            project.save()
+            messages.success(request,"Project created successfully!")
+            return redirect('profile')
+    else:
+        form=ProjectForm()
+    return render(request,'project_form.html',{'form':form})
+
+def my_projects(request):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    if not request.user.is_client:
+        return redirect('profile')
+
+    status = request.GET.get('status')
+
+    projects = Project.objects.filter(client=request.user)
+
+    if status:
+        projects = projects.filter(status=status)
+
+    return render(request, 'my_projects.html', {'projects': projects})
+
+def edit_project(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+    if not request.user.is_client:
+        return redirect('profile')
+    project=get_object_or_404(Project,id=id,client=request.user)
+    if request.method == "POST":
+        form = ProjectForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Project updated successfully!")
+            return redirect('my_projects')
+    else:
+        form = ProjectForm(instance=project)
+    return render(request, 'project_form.html', {'form': form})
+
+def publish_project(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+    if not request.user.is_client:
+        return redirect('profile')
+    project = get_object_or_404(Project, id=id, client=request.user)
+    if request.method == "POST" and project.status == 'draft':
+        project.status='published'
+        project.save()
+        messages.success(request,"Project published successfully!")
+    return redirect('my_projects')
+
+def pause_project(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    if not request.user.is_client:
+        return redirect('profile')
+
+    project = get_object_or_404(Project, id=id, client=request.user)
+
+    if request.method == "POST" and project.status == 'published':
+        project.status = 'paused'
+        project.save()
+        messages.success(request, "Project paused successfully!")
+
+    return redirect('my_projects')
+
+def close_project(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    if not request.user.is_client:
+        return redirect('profile')
+
+    project = get_object_or_404(Project, id=id, client=request.user)
+
+    if request.method == "POST" and project.status in ['published', 'paused']:
+        project.status = 'closed'
+        project.save()
+        messages.success(request, "Project closed successfully!")
+
+    return redirect('my_projects')
+
+def archive_project(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    if not request.user.is_client:
+        return redirect('profile')
+
+    project = get_object_or_404(Project, id=id, client=request.user)
+
+    if request.method == "POST" and project.status == 'closed':
+        project.status = 'archived'
+        project.save()
+        messages.success(request, "Project archived successfully!")
+
+    return redirect('my_projects')
+
+def browse_projects(request):
+    projects=Project.objects.filter(status='published').order_by('-id')
+    return render(request,'browse_projects.html',{'projects':projects})
+
+def browse_projects(request):
+    search = request.GET.get('search')
+
+    projects = Project.objects.filter(status='published').order_by('-id')
+
+    if search:
+        projects = projects.filter(
+            title__icontains=search
+        ) | projects.filter(
+            description__icontains=search
+        ) | projects.filter(
+            required_skills__icontains=search
+        )
+
+    return render(request, 'browse_projects.html', {'projects': projects })
+
+def browse_projects(request):
+    search = request.GET.get('search')
+    min_budget = request.GET.get('min_budget')
+    max_budget = request.GET.get('max_budget')
+    sort_by = request.GET.get('sort_by')
+
+    projects = Project.objects.filter(status='published').order_by('-id')
+
+    if search:
+        projects = projects.filter(
+            title__icontains=search
+        ) | projects.filter(
+            description__icontains=search
+        ) | projects.filter(
+            required_skills__icontains=search
+        )
+
+    if min_budget:
+        projects = projects.filter(budget__gte=min_budget)
+
+    if max_budget:
+        projects = projects.filter(budget__lte=max_budget)
+
+    if sort_by == 'budget_low':
+        projects = projects.order_by('budget')
+
+    elif sort_by == 'budget_high':
+        projects = projects.order_by('-budget')
+
+    elif sort_by == 'newest':
+        projects = projects.order_by('-id')
+
+    elif sort_by == 'oldest':
+        projects = projects.order_by('id')
+    paginator = Paginator(projects, 5)
+    page_number = request.GET.get('page')
+    projects = paginator.get_page(page_number)
+
+    return render(request, 'browse_projects.html', {'projects': projects})

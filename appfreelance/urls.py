@@ -14,4 +14,12 @@ urlpatterns = [
     path('view_portfolio/', views.view_portfolio, name='view_portfolio'),
     path('edit_portfolio/<int:id>/', views.edit_portfolio, name='edit_portfolio'),
     path('delete_portfolio/<int:id>/', views.delete_portfolio, name='delete_portfolio'),
+    path('create_project/', views.create_project, name='create_project'),
+    path('my_projects/', views.my_projects, name='my_projects'),
+    path('edit_project/<int:id>/', views.edit_project, name='edit_project'),
+    path('publish_project/<int:id>/', views.publish_project, name='publish_project'),
+    path('pause_project/<int:id>/', views.pause_project, name='pause_project'),
+    path('close_project/<int:id>/', views.close_project, name='close_project'),
+    path('archive_project/<int:id>/', views.archive_project, name='archive_project'),
+    path('browse_projects/', views.browse_projects, name='browse_projects'),
 ]

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My projects</title>
+</head>
+<body>
+<h2>My Projects</h2>
+<form method="GET">
+    <select name="status">
+        <option value="">All Projects</option>
+        <option value="draft">Draft</option>
+        <option value="published">Published</option>
+        <option value="paused">Paused</option>
+        <option value="closed">Closed</option>
+        <option value="archived">Archived</option>
+    </select>
+
+    <button type="submit">Filter Status</button>
+</form>
+{% for project in projects %}
+    <h3>{{ project.title }}</h3>
+    <p>Description: {{ project.description }}</p>
+    <p>Budget: {{ project.budget }}</p>
+    <p>Deadline: {{ project.deadline }}</p>
+    <p>Skills: {{ project.required_skills }}</p>
+    <p>Status: {{ project.status }}</p>
+<a href="{% url 'edit_project' project.id %}">Edit Project</a>
+{% if project.status == 'draft' %}
+    <form method="POST" action="{% url 'publish_project' project.id %}">
+        {% csrf_token %}
+        <button type="submit">Publish Project</button>
+    </form>
+{% endif %}
+{% if project.status == 'published' %}
+    <form method="POST" action="{% url 'pause_project' project.id %}">
+        {% csrf_token %}
+        <button type="submit">Pause Project</button>
+    </form>
+{% endif %}
+{% if project.status == 'published' or project.status == 'paused' %}
+    <form method="POST" action="{% url 'close_project' project.id %}">
+        {% csrf_token %}
+        <button type="submit">Close Project</button>
+    </form>
+{% endif %}
+{% if project.status == 'closed' %}
+    <form method="POST" action="{% url 'archive_project' project.id %}">
+        {% csrf_token %}
+        <button type="submit">Archive Project</button>
+    </form>
+{% endif %}
+
+    <hr>
+{% empty %}
+    <p>No projects created yet.</p>
+{% endfor %}
+
+<a href="{% url 'profile' %}">Back to Profile</a>
+</body>
+</html>
