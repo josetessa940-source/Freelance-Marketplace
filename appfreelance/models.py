@@ -59,3 +59,19 @@ class Project(models.Model):
     updated_url=models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.title
+
+class Proposal(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='proposals')
+    freelancer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    cover_letter = models.TextField()
+    proposed_budget = models.DecimalField(max_digits=10, decimal_places=2)
+    estimated_duration = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,choices=[
+            ('pending', 'Pending'),
+            ('accepted', 'Accepted'),
+            ('rejected', 'Rejected'),],
+        default='pending')
+    def __str__(self):
+        return self.project.title

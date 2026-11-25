@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Proposals</title>
+</head>
+<body>
+
+<h2>Proposals for {{ project.title }}</h2>
+
+{% for proposal in proposals %}
+
+    <h3>Freelancer: {{ proposal.freelancer.username }}</h3>
+
+    <p>Cover Letter: {{ proposal.cover_letter }}</p>
+
+    <p>Proposed Budget: {{ proposal.proposed_budget }}</p>
+
+    <p>Estimated Duration: {{ proposal.estimated_duration }} days</p>
+
+    <p>Status: {{ proposal.status }}</p>
+{% if proposal.status == 'pending' %}
+
+    <form method="POST" action="{% url 'accept_proposal' proposal.id %}">
+        {% csrf_token %}
+        <button type="submit">Accept</button>
+    </form>
+
+    <form method="POST" action="{% url 'reject_proposal' proposal.id %}">
+        {% csrf_token %}
+        <button type="submit">Reject</button>
+    </form>
+
+{% endif %}
+
+    <hr>
+
+{% empty %}
+
+    <p>No proposals received yet.</p>
+
+{% endfor %}
+
+<a href="{% url 'my_projects' %}">Back to My Projects</a>
+
+</body>
+</html>

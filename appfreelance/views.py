@@ -323,19 +323,22 @@ def my_projects(request):
 def edit_project(request, id):
     if not request.user.is_authenticated:
         return redirect('logn')
-    if not request.user.is_client:
+
+    project = get_object_or_404(Project, id=id)
+
+    if project.client != request.user and not request.user.is_staff:
         return redirect('profile')
-    project=get_object_or_404(Project,id=id,client=request.user)
+
     if request.method == "POST":
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
             form.save()
-            messages.success(request,"Project updated successfully!")
-            return redirect('my_projects')
+            messages.success(request, "Project updated successfully!")
+            return redirect('profile')
     else:
         form = ProjectForm(instance=project)
-    return render(request, 'project_form.html', {'form': form})
 
+    return render(request, 'project_form.html', {'form': form})
 def publish_project(request, id):
     if not request.user.is_authenticated:
         return redirect('logn')
@@ -455,3 +458,72 @@ def browse_projects(request):
     projects = paginator.get_page(page_number)
 
     return render(request, 'browse_projects.html', {'projects': projects})
+
+def submit_proposal(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    if not request.user.is_freelancer:
+        return redirect('profile')
+
+    project = get_object_or_404(Project, id=id)
+    if Proposal.objects.filter(project=project,freelancer=request.user,status='pending').exists():
+        messages.error(request, "You have already submitted a proposal for this project.")
+        return redirect('browse_projects')
+    if project.status != 'published':
+        messages.error(request, "This project is not accepting proposals.")
+        return redirect('browse_projects')
+
+    if request.method == "POST":
+        form = ProposalForm(request.POST)
+        if form.is_valid():
+            proposal = form.save(commit=False)
+            proposal.project = project
+            proposal.freelancer = request.user
+            proposal.save()
+            messages.success(request, "Proposal submitted successfully!")
+            return redirect('browse_projects')
+    else:
+        form = ProposalForm()
+
+    return render(request, 'proposal_form.html', {'form': form,'project': project})
+
+def view_proposals(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    if not request.user.is_client:
+        return redirect('profile')
+
+    project = get_object_or_404(Project, id=id, client=request.user)
+
+    proposals = Proposal.objects.filter(project=project)
+
+    return render(request,
+                  'view_proposals.html', {'project': project,'proposals': proposals})
+
+def accept_proposal(request, id):
+    if not request.user.is_authenticated or not request.user.is_client:
+        return redirect('profile')
+
+    proposal = get_object_or_404(Proposal,id=id,project__client=request.user)
+
+    if request.method == "POST" and proposal.status == 'pending':
+        proposal.status = 'accepted'
+        proposal.save()
+        messages.success(request, "Proposal accepted successfully!")
+
+    return redirect('view_proposals', id=proposal.project.id)
+
+def reject_proposal(request, id):
+    if not request.user.is_authenticated or not request.user.is_client:
+        return redirect('profile')
+
+    proposal = get_object_or_404(Proposal,id=id,project__client=request.user)
+
+    if request.method == "POST" and proposal.status == 'pending':
+        proposal.status = 'rejected'
+        proposal.save()
+        messages.success(request, "Proposal rejected successfully!")
+
+    return redirect('view_proposals', id=proposal.project.id)

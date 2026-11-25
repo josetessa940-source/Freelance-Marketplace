@@ -34,10 +34,10 @@
     {% endif %}
     {% if client_form %}
         <a href="{% url 'create_project' %}">Create Project</a>
-    {% endif %}
+    {% endif %}<br>
     {% if freelancer_form %}
     <a href="{% url 'browse_projects' %}">Browse Projects</a>
-    {% endif %}
+    {% endif %}<br>
     <a href="{% url 'my_projects' %}">My Projects</a>
     <button type="submit">Update Profile</button>
 </form>

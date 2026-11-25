@@ -25,7 +25,10 @@
     <p>Deadline: {{ project.deadline }}</p>
     <p>Skills: {{ project.required_skills }}</p>
     <p>Status: {{ project.status }}</p>
-<a href="{% url 'edit_project' project.id %}">Edit Project</a>
+<a href="{% url 'edit_project' project.id %}">Edit Project</a><br>
+<a href="{% url 'view_proposals' project.id %}">
+    <button type="button">View Proposals</button>
+</a>
 {% if project.status == 'draft' %}
     <form method="POST" action="{% url 'publish_project' project.id %}">
         {% csrf_token %}

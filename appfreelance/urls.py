@@ -22,4 +22,8 @@ urlpatterns = [
     path('close_project/<int:id>/', views.close_project, name='close_project'),
     path('archive_project/<int:id>/', views.archive_project, name='archive_project'),
     path('browse_projects/', views.browse_projects, name='browse_projects'),
+    path('submit_proposal/<int:id>/', views.submit_proposal, name='submit_proposal'),
+    path('view_proposals/<int:id>/', views.view_proposals, name='view_proposals'),
+    path('accept_proposal/<int:id>/', views.accept_proposal, name='accept_proposal'),
+    path('reject_proposal/<int:id>/', views.reject_proposal, name='reject_proposal'),
 ]

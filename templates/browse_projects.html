@@ -6,7 +6,11 @@
 <body>
 
 <h2>Available Projects</h2>
-
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
 <form method="GET">
 
     <input type="text" name="search" placeholder="Search projects...">
@@ -43,6 +47,9 @@
     <p>Created At: {{ project.created_url|date:"d-m-Y h:i A" }}</p>
 
     <p>Updated At: {{ project.updated_url|date:"d-m-Y h:i A" }}</p>
+<a href="{% url 'submit_proposal' project.id %}">
+    <button type="button">Submit Proposal</button>
+</a>
 
     <hr>
 

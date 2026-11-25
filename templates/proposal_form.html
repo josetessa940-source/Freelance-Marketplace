@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Proposal</title>
+</head>
+<body>
+
+<h2>Submit Proposal</h2>
+
+<h3>Project: {{ project.title }}</h3>
+
+<form method="POST">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">Submit Proposal</button>
+</form>
+
+<a href="{% url 'browse_projects' %}">Back to Projects</a>
+
+</body>
+</html>

@@ -49,3 +49,8 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model=Project
         fields=['title','description','budget','deadline','required_skills']
+
+class ProposalForm(forms.ModelForm):
+    class Meta:
+        model = Proposal
+        fields = ['cover_letter', 'proposed_budget', 'estimated_duration']
