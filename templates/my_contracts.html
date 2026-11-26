@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Contracts</title>
+</head>
+<body>
+
+<h2>My Contracts</h2>
+
+{% for contract in contracts %}
+
+    <h3>{{ contract.proposal.project.title }}</h3>
+
+    <p>Client: {{ contract.proposal.project.client.username }}</p>
+
+    <p>Freelancer: {{ contract.proposal.freelancer.username }}</p>
+
+    <p>Budget: {{ contract.proposal.proposed_budget }}</p>
+
+    <p>Status: {{ contract.status }}</p>
+
+    <p>Created At: {{ contract.created_at }}</p>
+
+    {% if contract.status == 'active' %}
+        <form method="POST" action="{% url 'complete_contract' contract.id %}">
+            {% csrf_token %}
+            <button type="submit">Complete Contract</button>
+        </form>
+
+        <form method="POST" action="{% url 'cancel_contract' contract.id %}">
+            {% csrf_token %}
+            <button type="submit">Cancel Contract</button>
+        </form>
+    {% endif %}
+
+    <hr>
+
+{% empty %}
+    <p>No contracts available.</p>
+{% endfor %}
+
+<a href="{% url 'profile' %}">Back to Profile</a>
+
+</body>
+</html>

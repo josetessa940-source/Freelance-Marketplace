@@ -15,6 +15,8 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.conf import settings
 from django.core.paginator import Paginator
+from django.db import transaction
+from django.utils import timezone
 # Create your views here.
 
 def home(request):
@@ -506,14 +508,27 @@ def accept_proposal(request, id):
     if not request.user.is_authenticated or not request.user.is_client:
         return redirect('profile')
 
-    proposal = get_object_or_404(Proposal,id=id,project__client=request.user)
+    with transaction.atomic():
+        proposal = get_object_or_404(
+            Proposal.objects.select_for_update(),
+            id=id,project__client=request.user)
 
-    if request.method == "POST" and proposal.status == 'pending':
-        proposal.status = 'accepted'
-        proposal.save()
-        messages.success(request, "Proposal accepted successfully!")
+        if request.method == "POST" and proposal.status == 'pending':
 
-    return redirect('view_proposals', id=proposal.project.id)
+            already_accepted = Proposal.objects.filter(
+                project=proposal.project,
+                status='accepted').exists()
+
+            if already_accepted:
+                messages.error(request, "Another proposal has already been accepted.")
+            else:
+                proposal.status = 'accepted'
+                proposal.decided_at = timezone.now()
+                proposal.save()
+                print("DECIDED AT:", proposal.decided_at)
+                Contract.objects.create(proposal=proposal,status='active')
+                messages.success(request, "Proposal accepted and contract created successfully!")
+        return redirect('view_proposals', id=proposal.project.id)
 
 def reject_proposal(request, id):
     if not request.user.is_authenticated or not request.user.is_client:
@@ -523,7 +538,61 @@ def reject_proposal(request, id):
 
     if request.method == "POST" and proposal.status == 'pending':
         proposal.status = 'rejected'
+        proposal.decided_at = timezone.now()
         proposal.save()
         messages.success(request, "Proposal rejected successfully!")
 
     return redirect('view_proposals', id=proposal.project.id)
+
+def complete_contract(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    contract = get_object_or_404(Contract, id=id)
+
+    if request.method == "POST":
+        if request.user not in [
+            contract.proposal.project.client,
+            contract.proposal.freelancer]:
+            return redirect('profile')
+
+        if contract.status == 'active':
+            contract.status = 'completed'
+            contract.completed_at = timezone.now()
+            contract.save()
+            messages.success(request, "Contract completed successfully!")
+
+    return redirect('profile')
+
+
+def cancel_contract(request, id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    contract = get_object_or_404(Contract, id=id)
+
+    if request.method == "POST":
+        if request.user not in [
+            contract.proposal.project.client,
+            contract.proposal.freelancer]:
+            return redirect('profile')
+
+        if contract.status == 'active':
+            contract.status = 'cancelled'
+            contract.cancelled_at = timezone.now()
+            contract.save()
+            messages.success(request, "Contract cancelled successfully!")
+
+    return redirect('profile')
+
+def my_contracts(request):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+
+    if request.user.is_staff:
+        contracts = Contract.objects.all()
+    else:
+        contracts = Contract.objects.filter(
+            models.Q(proposal__project__client=request.user) |
+            models.Q(proposal__freelancer=request.user))
+    return render(request, 'my_contracts.html', {'contracts': contracts})

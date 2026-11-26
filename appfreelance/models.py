@@ -67,6 +67,8 @@ class Proposal(models.Model):
     proposed_budget = models.DecimalField(max_digits=10, decimal_places=2)
     estimated_duration = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    decided_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(
         max_length=20,choices=[
             ('pending', 'Pending'),
@@ -75,3 +77,18 @@ class Proposal(models.Model):
         default='pending')
     def __str__(self):
         return self.project.title
+
+class Contract(models.Model):
+    proposal=models.OneToOneField(Proposal,on_delete=models.CASCADE,related_name='contract')
+    status=models.CharField(max_length=20,choices=[
+        ('active','Active'),
+        ('completed','Completed'),
+        ('cancelled','Cancelled'),],
+        default='active')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.proposal.project.title

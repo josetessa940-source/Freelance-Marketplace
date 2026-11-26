@@ -26,4 +26,7 @@ urlpatterns = [
     path('view_proposals/<int:id>/', views.view_proposals, name='view_proposals'),
     path('accept_proposal/<int:id>/', views.accept_proposal, name='accept_proposal'),
     path('reject_proposal/<int:id>/', views.reject_proposal, name='reject_proposal'),
+    path('complete_contract/<int:id>/', views.complete_contract, name='complete_contract'),
+    path('cancel_contract/<int:id>/', views.cancel_contract, name='cancel_contract'),
+    path('my_contracts/', views.my_contracts, name='my_contracts'),
 ]
