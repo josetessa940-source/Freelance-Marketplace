@@ -37,8 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'appfreelance'
+    'appfreelance',
+    'channels'
 ]
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 AUTH_USER_MODEL = 'appfreelance.CustomUser'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -68,7 +74,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'freelancepro.wsgi.application'
-
+ASGI_APPLICATION = 'freelancepro.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases

@@ -92,3 +92,12 @@ class Contract(models.Model):
 
     def __str__(self):
         return self.proposal.project.title
+
+class Message(models.Model):
+    contract=models.ForeignKey(Contract,on_delete=models.CASCADE,related_name='messages')
+    sender=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    content=models.TextField()
+    timestamp=models.DateTimeField(auto_now_add=True)
+    is_read=models.BooleanField(default=False)
+    def __str__(self):
+        return self.sender.username

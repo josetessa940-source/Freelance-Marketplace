@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Room</title>
+</head>
+<body>
+
+    <h2>Chat Room</h2>
+
+    <h3>Contract #{{ contract.id }}</h3>
+
+    <div id="chat-messages"></div>
+
+    <input type="text" id="message-input" placeholder="Type a message">
+    <button id="send-button">Send</button>
+
+    <script>
+        const contractId = "{{ contract.id }}";
+
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + contractId + '/'
+        );
+
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        chatSocket.onopen = function() {
+            console.log("WebSocket connected");
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            if (data.type === 'history') {
+                data.messages.forEach(function(msg) {
+                    displayMessage(msg);
+                });
+            } else {
+                displayMessage(data);
+            }
+        };
+
+        function displayMessage(msg) {
+            const p = document.createElement('p');
+            p.textContent = msg.sender + ': ' + msg.message;
+            chatMessages.appendChild(p);
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+
+            if (message !== '' && chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+
+                messageInput.value = '';
+            }
+        }
+
+        sendButton.onclick = sendMessage;
+
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        chatSocket.onclose = function() {
+            console.log("WebSocket disconnected");
+        };
+    </script>
+
+</body>
+</html>

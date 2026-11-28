@@ -596,3 +596,12 @@ def my_contracts(request):
             models.Q(proposal__project__client=request.user) |
             models.Q(proposal__freelancer=request.user))
     return render(request, 'my_contracts.html', {'contracts': contracts})
+
+def chat_room(request,contract_id):
+    if not request.user.is_authenticated:
+        return redirect('logn')
+    contract=get_object_or_404(Contract,id=contract_id)
+    if request.user not in[contract.proposal.project.client,
+                           contract.proposal.freelancer]:
+        return redirect('profile')
+    return render(request,'chat_room.html',{'contract':contract})

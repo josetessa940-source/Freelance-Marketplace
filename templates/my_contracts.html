@@ -34,12 +34,11 @@
     {% endif %}
 
     <hr>
-
+<a href="{% url 'chat_room' contract.id %}">Open Chat</a>
 {% empty %}
     <p>No contracts available.</p>
 {% endfor %}
 
 <a href="{% url 'profile' %}">Back to Profile</a>
-
 </body>
 </html>

@@ -29,4 +29,5 @@ urlpatterns = [
     path('complete_contract/<int:id>/', views.complete_contract, name='complete_contract'),
     path('cancel_contract/<int:id>/', views.cancel_contract, name='cancel_contract'),
     path('my_contracts/', views.my_contracts, name='my_contracts'),
+    path('chat_room/<int:contract_id>/', views.chat_room, name='chat_room'),
 ]
